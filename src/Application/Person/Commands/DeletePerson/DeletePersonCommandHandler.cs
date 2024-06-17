@@ -1,24 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Person.Queries;
 using MyPosTask.Application.Common.Exceptions;
 using MyPosTask.Application.Common.Interfaces;
-using MyPosTask.Domain.Enums;
+using MyPosTask.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection.Person.Commands.DeletePerson;
-
-public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand>
+namespace MyPosTask.Application.Person.Commands.DeletePerson
+{
+    public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public DeletePersonCommandHandler(IApplicationDbContext context)
+        public DeletePersonCommandHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task Handle(DeletePersonCommand request, CancellationToken cancellationToken)
         {
             var person = await _context.People
-                .Include(p => p.Addresses)
-                .ThenInclude(a => a.PhoneNumbers)
+                .Include(p => p.PersonAddresses)
+                    .ThenInclude(pa => pa.Address)
+                .Include(p => p.PersonAddresses)
+                    .ThenInclude(pa => pa.PhoneNumbers)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
@@ -27,7 +35,7 @@ public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand>
                 throw new NotFoundException(nameof(Person), request.Id.ToString());
             }
 
-            var originalRowVersion = _context.Entry(person).Property("RowVersion").OriginalValue as byte[];
+            var originalRowVersion = _context.Entry(person).Property("RowVersion").CurrentValue as byte[];
 
             _context.People.Remove(person);
 
@@ -39,8 +47,10 @@ public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand>
             {
                 var currentPerson = await _context.People
                     .AsNoTracking()
-                    .Include(p => p.Addresses)
-                    .ThenInclude(a => a.PhoneNumbers)
+                    .Include(p => p.PersonAddresses)
+                        .ThenInclude(pa => pa.Address)
+                    .Include(p => p.PersonAddresses)
+                        .ThenInclude(pa => pa.PhoneNumbers)
                     .AsSplitQuery()
                     .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
@@ -49,30 +59,10 @@ public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand>
                     throw new NotFoundException(nameof(Person), request.Id.ToString());
                 }
 
-                var personDto = MapToPersonDto(currentPerson);
+                var personDto = _mapper.Map<PersonDto>(currentPerson);
 
-                throw new ConcurrencyException("The record you attempted to delete was modified by another user after you got the original value.", personDto);
+                throw new ConcurrencyException<PersonDto>("The record you attempted to delete was modified by another user after you got the original value.", personDto);
             }
         }
-
-        private PersonDto MapToPersonDto(MyPosTask.Domain.Entities.Person person)
-        {
-            return new PersonDto
-            {
-                Id = person.Id,
-                Name = person.Name,
-                Addresses = person.Addresses.Select(a => new PersonDto.AddressDto
-                {
-                    Id = a.Id,
-                    Type = Enum.Parse<AddressType>(a.Type, true),
-                    Address1 = a.Address1,
-                    PhoneNumbers = a.PhoneNumbers.Select(p => new PersonDto.PhoneNumberDto
-                    {
-                        Id = p.Id,
-                        PhoneNumber1 = p.PhoneNumber1
-                    }).ToList()
-                }).ToList(),
-                RowVersion = _context.Entry(person).Property("RowVersion").CurrentValue as byte[]
-            };
-        }
     }
+}

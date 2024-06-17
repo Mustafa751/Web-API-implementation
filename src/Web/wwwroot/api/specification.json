@@ -140,34 +140,6 @@
           }
         }
       }
-    },
-    "/api/WeatherForecasts": {
-      "get": {
-        "tags": [
-          "WeatherForecasts"
-        ],
-        "operationId": "GetWeatherForecasts",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
     }
   },
   "components": {
@@ -240,57 +212,8 @@
           "addresses": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/AddressDto2"
+              "$ref": "#/components/schemas/AddressDto"
             }
-          }
-        }
-      },
-      "AddressDto2": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/AddressType"
-          },
-          "address1": {
-            "type": "string"
-          },
-          "phoneNumbers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PhoneNumberDto2"
-            }
-          }
-        }
-      },
-      "PhoneNumberDto2": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "phoneNumber1": {
-            "type": "string"
-          }
-        }
-      },
-      "WeatherForecast": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "temperatureF": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "summary": {
-            "type": "string",
-            "nullable": true
           }
         }
       }

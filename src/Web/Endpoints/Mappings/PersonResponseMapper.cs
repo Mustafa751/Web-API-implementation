@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Person.Queries;
 using MyPosTask.Application.Common.Models;
 
-namespace MyPosTask.Application.Common.Mappings;
+namespace MyPosTask.Web.Endpoints.Mappings;
 
 public class PersonResponseMapper
 {

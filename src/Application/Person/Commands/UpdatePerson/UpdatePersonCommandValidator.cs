@@ -1,10 +1,7 @@
-﻿using FluentValidation;
-using MyPosTask.Application.Common.Interfaces;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using MyPosTask.Application.Common.Interfaces;
+using MyPosTask.Application.Person.Models;
 
-namespace Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson
+namespace MyPosTask.Application.Person.Commands.UpdatePerson
 {
     public class UpdatePersonCommandValidator : AbstractValidator<UpdatePersonCommand>
     {
@@ -27,8 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson
         {
             var personId = GetPersonIdFromContext(); // Fetch the person ID from the context
 
-            return await _context.People
-                .Where(p => p.Id != personId)
+            return await Queryable
+                .Where(_context.People, p => p.Id != personId)
                 .AllAsync(p => p.Name != name, cancellationToken);
         }
 
@@ -40,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson
         }
     }
 
-    public class AddressDtoValidator : AbstractValidator<UpdatePersonCommand.AddressDto>
+    public class AddressDtoValidator : AbstractValidator<AddressDto>
     {
         public AddressDtoValidator()
         {
@@ -51,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson
         }
     }
 
-    public class PhoneNumberDtoValidator : AbstractValidator<UpdatePersonCommand.PhoneNumberDto>
+    public class PhoneNumberDtoValidator : AbstractValidator<PhoneNumberDto>
     {
         public PhoneNumberDtoValidator()
         {

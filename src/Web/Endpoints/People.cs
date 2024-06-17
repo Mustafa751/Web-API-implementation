@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection.People.Commands;
-using Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson;
-using Microsoft.Extensions.DependencyInjection.Person.Commands.DeletePerson;
-using Microsoft.Extensions.DependencyInjection.Person.Queries;
-using MyPosTask.Application.Common.Mappings;
-using MyPosTask.Application.Common.Models;
+﻿using Microsoft.Extensions.DependencyInjection.Person.Queries;
+using MyPosTask.Application.Person.Commands.CreatePerson;
+using MyPosTask.Application.Person.Commands.DeletePerson;
+using MyPosTask.Application.Person.Commands.UpdatePerson;
+using MyPosTask.Web.Endpoints.Mappings;
 
 namespace MyPosTask.Web.Endpoints;
 
@@ -37,7 +36,7 @@ public class People : EndpointGroupBase
         //command.Id = id; I did think about setting it like this, but I think the user should ensure they are the same
         if (id != command.Id) return Results.BadRequest();
         await sender.Send(command);
-        return Results.NoContent();
+        return Results.Accepted();
     }
 
     public async Task<IResult> DeletePerson(ISender sender, int id)

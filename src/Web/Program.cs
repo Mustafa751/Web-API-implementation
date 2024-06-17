@@ -1,15 +1,13 @@
-using FluentValidation;
 using MyPosTask.Infrastructure.Persistence;
 using MyPosTask.Infrastructure.Data.Interceptors;
 using Serilog;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection.People.Commands;
-using Microsoft.Extensions.DependencyInjection.People.Commands.UpdatePerson;
-using Microsoft.Extensions.DependencyInjection.Person.Commands.DeletePerson;
 using MyPosTask.Application.Common.Interfaces;
 using MyPosTask.Application.Common.Mappings;
+using MyPosTask.Application.Person.Commands.CreatePerson;
+using MyPosTask.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +24,13 @@ builder.Services.AddKeyVaultIfConfigured(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddMemoryCache();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddScoped<IApplicationDbContext>(provider => (IApplicationDbContext)provider.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
 // Register TimeProvider
 builder.Services.AddSingleton<TimeProvider, SystemTimeProvider>();
@@ -50,9 +50,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssemblyContaining<CreatePersonCommandValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UpdatePersonCommandValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<DeletePersonCommandValidator>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
@@ -80,4 +77,7 @@ app.MapEndpoints();
 
 app.Run();
 
-public partial class Program { }
+namespace MyPosTask.Web
+{
+    public partial class Program { }
+}

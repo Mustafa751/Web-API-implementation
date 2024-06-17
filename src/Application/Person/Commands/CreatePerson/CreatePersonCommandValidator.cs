@@ -1,6 +1,7 @@
 ﻿using MyPosTask.Application.Common.Interfaces;
+using MyPosTask.Application.Person.Models;
 
-namespace Microsoft.Extensions.DependencyInjection.People.Commands;
+namespace MyPosTask.Application.Person.Commands.CreatePerson;
 
 public class CreatePersonCommandValidator : AbstractValidator<CreatePersonCommand>
 {
@@ -24,7 +25,7 @@ public class CreatePersonCommandValidator : AbstractValidator<CreatePersonComman
             .AllAsync(p => p.Name != name, cancellationToken);
     }
 
-    public class AddressDtoValidator : AbstractValidator<CreatePersonCommand.AddressDto>
+    public class AddressDtoValidator : AbstractValidator<AddressDto>
     {
         public AddressDtoValidator()
         {
@@ -35,7 +36,7 @@ public class CreatePersonCommandValidator : AbstractValidator<CreatePersonComman
         }
     }
 
-    public class PhoneNumberDtoValidator : AbstractValidator<CreatePersonCommand.PhoneNumberDto>
+    public class PhoneNumberDtoValidator : AbstractValidator<PhoneNumberDto>
     {
         public PhoneNumberDtoValidator()
         {

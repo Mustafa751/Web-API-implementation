@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Extensions.DependencyInjection.Person.Commands.DeletePerson;
+﻿namespace MyPosTask.Application.Person.Commands.DeletePerson;
 
 public class DeletePersonCommand : IRequest
 {

@@ -2,12 +2,12 @@
 
 namespace MyPosTask.Application.Common.Exceptions;
 
-public class ConcurrencyException : Exception
+public class ConcurrencyException<T> : Exception
 {
-    public ConcurrencyException(string message, PersonDto currentPerson) : base(message)
+    public ConcurrencyException(string message, T currentPerson) : base(message)
     {
         CurrentPerson = currentPerson;
     }
 
-    public PersonDto CurrentPerson { get; }
+    public T CurrentPerson { get; }
 }

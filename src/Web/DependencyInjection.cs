@@ -1,13 +1,11 @@
 ﻿using Azure.Identity;
-using MyPosTask.Application.Common.Interfaces;
-using MyPosTask.Infrastructure.Data;
-using MyPosTask.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-
+using MyPosTask.Application.Common.Interfaces;
+using MyPosTask.Web.Services;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace MyPosTask.Web;
 
 public static class DependencyInjection
 {
